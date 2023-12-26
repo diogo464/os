@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - "0 0 * * 1" # every monday, I think...
+    - cron: "0 0 * * 1" # every monday, I think...
 jobs:
   build:
     runs-on: [coreos-stable]
@@ -18,8 +18,5 @@ jobs:
           username: ${{ env.GITHUB_ACTOR }}
           password: ${{ secrets.AUTH_TOKEN }}
 
-      - name: Build image
-        run: docker build -t git.d464.sh/infra/nas:latest -f Containerfile .
-
-      - name: Push image
-        run: docker push git.d464.sh/infra/nas:latest
+      - name: build and push
+        run: "PUSH=1 ./build.sh"
