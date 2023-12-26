@@ -3,7 +3,7 @@ FROM git.d464.sh/infra/os/base:latest
 # https://devnonsense.com/posts/k3s-on-fedora-coreos-bare-metal/#create-the-iso
 
 RUN curl https://github.com/k3s-io/k3s/releases/download/v1.28.4%2Bk3s2/k3s -L -o k3s && \
-	chmod 0755 k3s && mkdir -p /var/usr/local/bin && mv k3s /var/usr/local/bin/k3s
+	chmod 0755 k3s && mkdir -p /usr/bin && mv k3s /usr/bin/k3s
 	
 COPY include/kubernetes.repo /etc/yum.repos.d 
 RUN chown 0644 /etc/yum.repos.d/kubernetes.repo
