@@ -19,3 +19,5 @@ FROM git.d464.sh/infra/os/kube:latest
 
 COPY --from=builder /var/zfs/zfs/*.rpm ./
 RUN rpm-ostree install --assumeyes --apply-live *.rpm man && rm *.rpm
+RUN rpm-ostree override remove nfs-utils-coreos --install nfs-utils
+RUN systemctl enable nfs-server
