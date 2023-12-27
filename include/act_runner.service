@@ -1,0 +1,12 @@
+[Unit]
+Description=gitea act runner
+
+[Service]
+Type=exec
+WorkingDirectory=%h/%i/
+ExecStart=/usr/bin/act_runner daemon
+RestartSec=5s
+Restart=always
+
+[Install]
+WantedBy=default.target
