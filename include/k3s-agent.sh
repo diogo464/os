@@ -4,6 +4,6 @@ k3s agent \
         --selinux \
         --data-dir /var/k3s \
         --default-local-storage-path /var/volumes \
-        --server $(cat /var/k3s/server) \
-        --token-file /var/k3s/token || exit 1
+        --server $(cat /var/server) \
+        --token-file /var/token || exit 1
 systemd-notify --ready
