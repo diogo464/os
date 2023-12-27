@@ -13,31 +13,12 @@ RUN chown 0644 /etc/yum.repos.d/rancher-k3s-common.repo
 
 RUN rpm-ostree install --assumeyes --allow-inactive kubectl k3s-selinux
 
-#- name: "k3s.service"
-#  enabled: true
-#  contents: |
-#    [Unit]
-#    Description=Run K3s
-#    Wants=network-online.target
-#    After=network-online.target
-
-#    [Service]
-#    Type=notify
-#    EnvironmentFile=-/etc/default/%N
-#    EnvironmentFile=-/etc/sysconfig/%N
-#    EnvironmentFile=-/etc/systemd/system/%N.env
-#    KillMode=process
-#    Delegate=yes
-#    LimitNOFILE=1048576
-#    LimitNPROC=infinity
-#    LimitCORE=infinity
-#    TasksMax=infinity
-#    TimeoutStartSec=0
-#    Restart=always
-#    RestartSec=5s
-#    ExecStartPre=-/sbin/modprobe br_netfilter
-#    ExecStartPre=-/sbin/modprobe overlay
-#    ExecStart=/usr/local/bin/k3s server
-
-#    [Install]
-#    WantedBy=multi-user.target  
+COPY	include/k3s-agent.sh \
+		include/k3s-bootstrap.sh \
+		include/k3s-config.sh \
+		include/k3s-server.sh \
+		include/k3s-setup.sh \
+		include/k3s-token.sh \
+		/usr/bin/
+COPY include/k3s.service /etc/systemd/system/k3s.service
+RUN systemctl enable k3s.service
