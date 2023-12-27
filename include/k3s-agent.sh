@@ -4,5 +4,5 @@ k3s agent \
         --selinux \
         --data-dir /var/k3s \
         --server $(cat /var/server) \
-        --token-file /var/token || exit 1
+        --token-file /var/token &
 systemd-notify --ready
