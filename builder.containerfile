@@ -1,5 +1,6 @@
 FROM git.d464.sh/infra/os/base:latest
 
+RUN systemctl enable docker
 RUN curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.6/act_runner-0.2.6-linux-amd64 -o /usr/bin/act_runner && chmod 755 /usr/bin/act_runner
 
 COPY include/act_runner_config.yml /etc/act_runner_config.yml
