@@ -11,7 +11,7 @@ if [ "$#" -eq "0" ]; then
         echo "  bootstrap address should look like https://hostname:6443"
         echo
         echo "to redo the setup just run"
-        echo "  rm -rf /var/k3s"
+        echo "  rm -rf /var/lib/rancher/k3s"
         exit 1
 fi
 
