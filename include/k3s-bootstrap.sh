@@ -1,6 +1,6 @@
 #!/bin/sh
 mkdir -p /var/lib/rancher/k3s
-k3s server \
+exec k3s server \
         --cluster-init \
         --selinux \
         --cluster-cidr 10.1.0.0/16 \
@@ -9,5 +9,4 @@ k3s server \
         --cluster-domain cluster.local \
         --disable-cloud-controller \
         --disable-helm-controller \
-        --disable traefik,servicelb,local-storage || exit 1
-systemd-notify --ready
+        --disable traefik,servicelb,local-storage

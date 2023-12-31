@@ -22,3 +22,5 @@ RUN rpm-ostree install --assumeyes --apply-live *.rpm man && rm *.rpm
 RUN ln -s /usr/bin/man.man-db /usr/bin/man
 RUN rpm-ostree override remove nfs-utils-coreos --install nfs-utils
 RUN systemctl enable nfs-server
+
+COPY include/gitea.container /usr/share/containers/systemd/gitea.container
