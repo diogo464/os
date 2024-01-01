@@ -1,7 +1,6 @@
 #!/bin/sh
 mkdir -p /var/lib/rancher/k3s
 exec k3s server \
-        --selinux \
         --cluster-cidr 10.1.0.0/16 \
         --service-cidr 10.2.0.0/16 \
         --cluster-dns 10.2.0.10 \
