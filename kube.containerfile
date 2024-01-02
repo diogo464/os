@@ -16,6 +16,7 @@ RUN rpm-ostree install --assumeyes --allow-inactive kubectl k3s-selinux htop
 COPY	include/k3s-agent.sh \
 		include/k3s-bootstrap.sh \
 		include/k3s-config.sh \
+		include/k3s-killall.sh \
 		include/k3s-server.sh \
 		include/k3s-setup.sh \
 		include/k3s-token.sh \

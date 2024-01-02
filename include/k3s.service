@@ -21,6 +21,7 @@ ExecCondition=test -e /usr/local/bin/k3s.sh
 ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s.sh
+ExecStopPost=/usr/bin/k3s-killall.sh
 
 [Install]
 WantedBy=multi-user.target  
