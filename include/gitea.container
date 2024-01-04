@@ -3,6 +3,7 @@ Description=Gitea
 
 [Container]
 Image=docker.io/gitea/gitea:1.21.3
+DNS=10.0.0.1
 SecurityLabelDisable=true
 Volume=/var/zfs/blackmesa/gitea:/data
 Environment=GITEA__database__DBTYPE="sqlite3"
