@@ -26,6 +26,8 @@ Environment=GITEA__server__CERT_FILE="cert.pem"
 Environment=GITEA__server__KEY_FILE="key.pem"
 Environment=GITEA__cron__ENABLED="true"
 Environment=GITEA__markup__ENABLED="true"
+Environment=GITEA__webhook__ALLOWED_HOST_LIST="10.0.0.0/24,*.d464.sh"
+Environment=GITEA__webhook__SKIP_TLS_VERIFY="true"
 PublishPort=443:3000
 PublishPort=2222:2222
 
