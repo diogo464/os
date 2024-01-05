@@ -22,4 +22,5 @@ COPY	include/k3s-agent.sh \
 		include/k3s-token.sh \
 		/usr/bin/
 COPY include/k3s.service /etc/systemd/system/k3s.service
+COPY include/inotify.confi /etc/sysctl.d/inotify.conf
 RUN systemctl enable k3s.service
