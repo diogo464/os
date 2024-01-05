@@ -36,6 +36,10 @@ runner:
   labels:
     - "ubuntu-latest:docker://git.d464.sh/actions/images/ubuntu:latest"
     - "coreos-stable:docker://git.d464.sh/actions/images/coreos:stable"
+    - "fedora-37:docker://git.d464.sh/actions/images/fedora:37"
+    - "fedora-38:docker://git.d464.sh/actions/images/fedora:38"
+    - "fedora-39:docker://git.d464.sh/actions/images/fedora:39"
+    - "fedora-latest:docker://git.d464.sh/actions/images/fedora:latest"
 
 cache:
   # Enable cache server to use actions/cache.
