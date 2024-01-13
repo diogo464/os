@@ -22,39 +22,45 @@ table inet xen {
         chain nat {
                 type nat hook prerouting priority 0; policy accept;
 
-				# we have to dnat all port forwards here
-				# ex:
+	        # we have to dnat all port forwards here
+		# ex:
                 # 	tcp dport 80 dnat ip to 10.0.0.50:3000;
-				{{MARKER_DNAT}}
+	        {{MARKER_DNAT}}
         }
+
+	chain nat_postrouting {
+		type nat hook postrouting priority 0; policy accept;
+		ip saddr $net_ipv4_lan masquerade;
+	}
 
         # packets coming destined to the router itself
         chain input {
                 type filter hook input priority 0; policy drop;
+                jump global;
 
-				jump global;
                 ip protocol icmp limit rate 5/second accept;
                 tcp dport ssh accept;
                 iif $nic_lan accept;
-				iif lo accept;
+		iif lo accept;
         }
 
         # packets destined to another host
         chain forward {
                 type filter hook forward priority 0; policy drop;
                 jump global;
-                oif vmap { $nic_upstream : jump forward_upstream, $nic_lan : jump forward_lan }
+
+                oif vmap { $nic_upstream : jump forward_upstream, $nic_lan : jump forward_lan };
         }
 
         chain forward_upstream {
-                accept
+		accept
         }
 
         chain forward_lan {
-			# we have to accept the packets that were nated in the nat chain
-			# ex:
-			# 	ip daddr 10.0.0.50 tcp dport 3000 accept;
-			{{MARKER_FORWARD_ACCEPT}}
+                # we have to accept the packets that were nated in the nat chain
+                # ex:
+                # 	ip daddr 10.0.0.50 tcp dport 3000 accept;
+                {{MARKER_FORWARD_ACCEPT}}
         }
 
         chain postrouting {
