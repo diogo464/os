@@ -2,7 +2,7 @@
 Name=enp1s0
 
 [Network]
-IPForward=ipv4
+IPForward=true
 Address=10.0.0.1/16
 DHCPServer=yes
 

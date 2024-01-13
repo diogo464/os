@@ -2,5 +2,5 @@
 Name=enp2s0
 
 [Network]
-IPForward=ipv4
+IPForward=true
 DHCP=ipv4
