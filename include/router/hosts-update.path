@@ -1,0 +1,10 @@
+# /etc/systemd/system/hosts-update.path
+
+[Unit]
+Description=Watch for changes to files in /etc/router/hosts.d/
+
+[Path]
+PathChanged=/etc/router/hosts.d/
+
+[Install]
+WantedBy=multi-user.target

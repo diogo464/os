@@ -1,0 +1,14 @@
+# /etc/systemd/system/coredns.service
+
+[Unit]
+Description=CoreDNS DNS Server
+Documentation=https://coredns.io
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/coredns -conf /etc/router/Corefile
+Restart=always
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

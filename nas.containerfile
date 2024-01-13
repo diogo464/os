@@ -26,3 +26,5 @@ RUN systemctl enable nfs-server
 COPY include/zfs-scrub@.service /etc/systemd/system/zfs-scrub@.service
 COPY include/zfs-scrub@.timer /etc/systemd/system/zfs-scrub@.timer
 COPY include/gitea.container /usr/share/containers/systemd/gitea.container
+
+RUN ostree container commit

@@ -1,0 +1,10 @@
+# /etc/systemd/system/nft-generator.path
+
+[Unit]
+Description=Watch for changes to /etc/router/forward
+
+[Path]
+PathModified=/etc/router/forward
+
+[Install]
+WantedBy=multi-user.target

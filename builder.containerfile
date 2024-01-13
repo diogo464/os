@@ -5,3 +5,5 @@ RUN curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.6/act_runn
 
 COPY include/act_runner_config.yml /etc/act_runner_config.yml
 COPY include/act_runner.service /etc/systemd/user/act_runner.service
+
+RUN ostree container commit

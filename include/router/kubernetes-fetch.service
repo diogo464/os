@@ -1,0 +1,8 @@
+# /etc/systemd/system/kubernetes-fetch.service
+
+[Unit]
+Description=Fetch Kubernetes Data
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kubernetes-fetch.py

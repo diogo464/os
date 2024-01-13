@@ -1,0 +1,16 @@
+[Match]
+Name=enp1s0
+
+[Network]
+IPForward=ipv4
+Address=10.0.0.1/16
+DHCPServer=yes
+
+[DHCPServer]
+PoolSize=150
+PoolOffset=50
+DefaultLeaseTimeSec=30
+EmitDNS=yes
+DNS=10.0.0.1
+BootServerAddress=10.0.0.1
+BootFilename=

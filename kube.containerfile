@@ -24,3 +24,5 @@ COPY	include/k3s-agent.sh \
 COPY include/k3s.service /etc/systemd/system/k3s.service
 COPY include/inotify.confi /etc/sysctl.d/inotify.conf
 RUN systemctl enable k3s.service
+
+RUN ostree container commit

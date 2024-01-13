@@ -1,0 +1,13 @@
+# /etc/systemd/system/networkctl-hosts.service
+
+[Unit]
+Description=Update /etc/router/hosts from networkctl
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sh -c '/usr/bin/networkctl-hosts.py > /etc/router/hosts.d/networkctl'
+
+[Install]
+WantedBy=multi-user.target
