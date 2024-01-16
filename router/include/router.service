@@ -1,0 +1,9 @@
+[Unit]
+Description=Router daemon
+
+[Service]
+ExecStart=/usr/bin/router
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

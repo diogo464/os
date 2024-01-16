@@ -1,8 +1,0 @@
-# /etc/systemd/system/hosts-update.service
-
-[Unit]
-Description=Update /etc/router/hosts from /etc/router/hosts.d/
-
-[Service]
-Type=simple
-ExecStart=/bin/sh -c 'mkdir -p /run/router && /usr/bin/hosts-update.py > /run/router/hosts'

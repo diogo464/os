@@ -6,7 +6,7 @@ Documentation=https://coredns.io
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/coredns -conf /etc/router/Corefile
+ExecStart=/usr/bin/coredns -conf /etc/Corefile
 Restart=always
 LimitNOFILE=4096
 

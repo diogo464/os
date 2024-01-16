@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 PREFIX="git.d464.sh/infra/os"
 TAG="latest"
@@ -8,6 +8,8 @@ docker build -t "$PREFIX/base:$TAG" -f base/Containerfile base/ || exit 1
 docker build -t "$PREFIX/kube:$TAG" -f kube/Containerfile kube/ || exit 1
 docker build -t "$PREFIX/nas:$TAG" -f nas/Containerfile nas/ || exit 1
 docker build -t "$PREFIX/builder:$TAG" -f builder/Containerfile builder/ || exit 1
+
+pushd router; go build . || exit 1 ; popd
 docker build -t "$PREFIX/router:$TAG" -f router/Containerfile router/ || exit 1
 
 if [ "$PUSH" -eq "1" ]; then
