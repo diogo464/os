@@ -1,0 +1,36 @@
+FROM git.d464.sh/infra/os/base:latest
+
+RUN rpm-ostree install neovim htop tcpdump systemd-networkd tmux wpa_supplicant python
+RUN curl https://github.com/coredns/coredns/releases/download/v1.11.1/coredns_1.11.1_linux_amd64.tgz -L -o coredns.tgz && \
+	tar -xf coredns.tgz && rm coredns.tgz && chmod 0755 coredns && mv coredns /usr/bin/
+
+COPY include/10-upstream.network /etc/systemd/network/
+COPY include/20-lan.network /etc/systemd/network/
+COPY include/coredns.service /etc/systemd/system/
+COPY include/nft-generator.service /etc/systemd/system/
+COPY include/nft-generator.path /etc/systemd/system/
+COPY include/networkctl-hosts.service /etc/systemd/system/
+COPY include/networkctl-hosts.timer /etc/systemd/system/
+COPY include/hosts-update.service /etc/systemd/system/
+COPY include/hosts-update.path /etc/systemd/system/
+COPY include/kubernetes-fetch.service /etc/systemd/system/
+COPY include/kubernetes-fetch.timer /etc/systemd/system/
+
+COPY include/nft-generator.py /usr/bin/
+COPY include/networkctl-hosts.py /usr/bin/
+COPY include/hosts-update.py /usr/bin/
+COPY include/kubernetes-fetch.py /usr/bin/
+
+RUN mkdir -p /etc/router /etc/router/hosts.d/ /etc/router/forward.d/
+COPY include/router.nft.template /etc/router/
+COPY include/Corefile /etc/router/
+
+RUN systemctl disable NetworkManager
+RUN systemctl enable systemd-networkd \
+	coredns \
+	nft-generator.service nft-generator.path \
+	networkctl-hosts.timer \
+	hosts-update.path \
+	kubernetes-fetch.timer
+
+RUN ostree container commit
