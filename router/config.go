@@ -10,8 +10,6 @@ var (
 	CONFIG_NETWORK_FILE_UPSTREAM string
 	//go:embed config/20-lan.network
 	CONFIG_NETWORK_FILE_LAN string
-	//go:embed config/Corefile
-	CONFIG_COREFILE string
 )
 
 var CONFIG_SYSTEMD_NETWORKD = []SystemdNetworkdConfig{

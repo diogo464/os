@@ -18,7 +18,8 @@ type SystemdNetworkdConfig struct {
 }
 
 const (
-	ROUTER_COREFILE_PATH             = "/etc/Corefile"
+	ROUTER_CONFIG_DIRECTORY          = "/etc/router"
+	ROUTER_CONFIG_BLOCKY_PATH        = ROUTER_CONFIG_DIRECTORY + "/blocky.yaml"
 	ROUTER_RUN_DIRECTORY             = "/run/router"
 	ROUTER_HOSTS_FILE_OUTPUT         = ROUTER_RUN_DIRECTORY + "/hosts"
 	ROUTER_NFT_MARKER_DNAT           = "{{MARKER_DNAT}}"
@@ -26,8 +27,10 @@ const (
 )
 
 var (
-	//go:embed config/router.nft.template
+	//go:embed include/router.nft.template
 	ROUTER_NFT_TEMPLATE string
+	//go:embed include/blocky.yaml
+	ROUTER_BLOCKY_CONFIG string
 )
 
 func main() {
@@ -53,14 +56,14 @@ func main() {
 		log.Fatalf("Failed to restart systemd-networkd: %v", err)
 	}
 
-	// coredns configuration
-	log.Println("Replacing Corefile...")
-	if err := os.WriteFile(ROUTER_COREFILE_PATH, []byte(CONFIG_COREFILE), 0644); err != nil {
-		log.Fatalf("Failed to write %s: %v", ROUTER_COREFILE_PATH, err)
+	// blocky configuration
+	log.Println("Replacing Blocky config...")
+	if err := os.WriteFile(ROUTER_CONFIG_BLOCKY_PATH, []byte(ROUTER_BLOCKY_CONFIG), 0644); err != nil {
+		log.Fatalf("Failed to write %s: %v", ROUTER_CONFIG_BLOCKY_PATH, err)
 	}
-	log.Println("Restarting coredns...")
-	if err := runCommand("systemctl", "restart", "coredns"); err != nil {
-		log.Fatalf("Failed to restart coredns: %v", err)
+	log.Println("Restarting blocky...")
+	if err := runCommand("systemctl", "restart", "blocky"); err != nil {
+		log.Fatalf("Failed to restart blocky: %v", err)
 	}
 
 	go func() {
@@ -80,6 +83,13 @@ func hostsLoop() error {
 	type sourceFetchResult struct {
 		index   int
 		entries []HostsEntry
+	}
+
+	if _, err := os.Stat(ROUTER_HOSTS_FILE_OUTPUT); os.IsNotExist(err) {
+		log.Printf("Creating %s...", ROUTER_HOSTS_FILE_OUTPUT)
+		if err := os.WriteFile(ROUTER_HOSTS_FILE_OUTPUT, []byte(""), 0644); err != nil {
+			return errors.Wrapf(err, "Failed to create %s", ROUTER_HOSTS_FILE_OUTPUT)
+		}
 	}
 
 	prevFileContent := ""
