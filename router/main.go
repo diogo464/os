@@ -134,6 +134,16 @@ func forwardsLoop() error {
 	}
 	entries := make([][]ForwardsEntry, len(FORWARD_SOURCES))
 	resultsChan := make(chan sourceFetchResult)
+	applyNftTemplate := func(content string) error {
+		cmd := exec.Command("nft", "-f", "-")
+		cmd.Stdin = strings.NewReader(content)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return errors.Wrapf(err, "Failed to run nft -f -")
+		}
+		return nil
+	}
 
 	for i, source := range FORWARD_SOURCES {
 		go func(i int, s ForwardsSource, c chan sourceFetchResult) {
@@ -153,6 +163,11 @@ func forwardsLoop() error {
 		}(i, source, resultsChan)
 	}
 
+	log.Println("Applying empty nft template...")
+	if err := applyNftTemplate(renderNftTemplate(ROUTER_NFT_TEMPLATE, []ForwardsEntry{})); err != nil {
+		return errors.Wrapf(err, "Failed to apply nft template")
+	}
+
 	previousContent := ""
 	for result := range resultsChan {
 		entries[result.index] = result.entries
@@ -168,13 +183,8 @@ func forwardsLoop() error {
 		if content == previousContent {
 			continue
 		}
-
-		cmd := exec.Command("nft", "-f", "-")
-		cmd.Stdin = strings.NewReader(content)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return errors.Wrapf(err, "Failed to run nft -f -")
+		if err := applyNftTemplate(content); err != nil {
+			return errors.Wrapf(err, "Failed to apply nft template")
 		}
 	}
 
