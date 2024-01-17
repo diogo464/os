@@ -19,7 +19,8 @@ type SystemdNetworkdConfig struct {
 
 const (
 	ROUTER_COREFILE_PATH             = "/etc/Corefile"
-	ROUTER_HOSTS_FILE_OUTPUT         = "/run/router/hosts"
+	ROUTER_RUN_DIRECTORY             = "/run/router"
+	ROUTER_HOSTS_FILE_OUTPUT         = ROUTER_RUN_DIRECTORY + "/hosts"
 	ROUTER_NFT_MARKER_DNAT           = "{{MARKER_DNAT}}"
 	ROUTER_NFT_MARKER_FORWARD_ACCEPT = "{{MARKER_FORWARD_ACCEPT}}"
 )
@@ -30,6 +31,11 @@ var (
 )
 
 func main() {
+	log.Println("Starting router...")
+	if err := os.MkdirAll(ROUTER_RUN_DIRECTORY, 0755); err != nil {
+		log.Fatalf("Failed to create %s: %v", ROUTER_RUN_DIRECTORY, err)
+	}
+
 	// systemd-networkd configuration
 	log.Println("Clearing systemd-networkd network configurations...")
 	if err := ensureEmptyDirectory("/etc/systemd/network"); err != nil {
