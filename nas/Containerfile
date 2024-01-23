@@ -5,6 +5,7 @@ RUN rpm-ostree install --assumeyes --apply-live binutils gcc make autoconf autom
 WORKDIR /var/zfs
 RUN mkdir bin && ln -s /usr/bin/ld.gold bin/ld
 ENV PATH="/var/zfs/bin:${PATH}"
+RUN echo "trigger rebuild build"
 
 RUN git clone https://github.com/openzfs/zfs
 WORKDIR /var/zfs/zfs
