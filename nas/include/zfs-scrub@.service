@@ -1,9 +1,0 @@
-[Unit]
-Description=ZFS Pool Scrub Service
-
-[Service]
-Type=simple
-ExecStart=/usr/sbin/zpool scrub -w %i
-
-[Install]
-WantedBy=default.target
