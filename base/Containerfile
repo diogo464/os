@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-coreos@sha256:edf36bacc53a0feb09796e46f1443060155987ef6f9985f40e163ce4222dfbce
+FROM quay.io/fedora/fedora-coreos:stable
 RUN systemctl disable zincati
 RUN rpm-ostree install tmux
 RUN ostree container commit
