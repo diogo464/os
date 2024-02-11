@@ -1,0 +1,9 @@
+[Unit]
+Description=Docker System Prune Timer
+
+[Timer]
+OnUnitActiveSec=2h
+Unit=docker-system-prune.service
+
+[Install]
+WantedBy=timers.target

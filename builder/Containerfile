@@ -5,5 +5,9 @@ RUN curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.6/act_runn
 
 COPY include/act_runner_config.yml /etc/act_runner_config.yml
 COPY include/act_runner.service /etc/systemd/user/act_runner.service
+COPY include/docker-system-prune.service /etc/systemd/system/docker-system-prune.service
+COPY include/docker-system-prune.timer /etc/systemd/system/docker-system-prune.timer
+
+RUN systemctl enable docker-system-prune.timer
 
 RUN ostree container commit

@@ -1,0 +1,6 @@
+[Unit]
+Description=Docker System Prune Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker system prune -f
