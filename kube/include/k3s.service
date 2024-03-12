@@ -2,13 +2,14 @@
 Description=Run K3s
 Wants=network-online.target
 After=network-online.target
+StartLimitIntervalSec=0
+StartLimitBurst=0
 
 [Service]
 Type=notify
 EnvironmentFile=-/etc/default/%N
 EnvironmentFile=-/etc/sysconfig/%N
 EnvironmentFile=-/etc/systemd/system/%N.env
-KillMode=process
 Delegate=yes
 LimitNOFILE=1048576
 LimitNPROC=infinity
@@ -24,4 +25,4 @@ ExecStart=/usr/local/bin/k3s.sh
 ExecStopPost=/usr/bin/k3s-killall.sh
 
 [Install]
-WantedBy=multi-user.target  
+WantedBy=multi-user.target
