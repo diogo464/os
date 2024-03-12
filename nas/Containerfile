@@ -2,13 +2,13 @@ FROM quay.io/fedora/fedora-coreos:stable AS builder
 
 # https://github.com/ItalyPaleAle/fcos-layers/blob/main/zfs/Containerfile
 
-RUN rpm-ostree install --assumeyes --apply-live binutils gcc make autoconf automake libtool rpm-build libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel zlib-devel libaio-devel libattr-devel elfutils-libelf-devel kernel-devel python3 python3-devel python3-setuptools python3-cffi libffi-devel git ncompress libcurl-devel python3-packaging dkms
+RUN rpm -qa kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' | tee /kernel-version.txt
+
+RUN rpm-ostree install --assumeyes --apply-live binutils gcc make autoconf automake libtool rpm-build libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel zlib-devel libaio-devel libattr-devel elfutils-libelf-devel kernel-devel python3 python3-devel python3-setuptools python3-cffi libffi-devel git ncompress libcurl-devel python3-packaging dkms kernel-$(cat /kernel-version.txt) kernel-modules-$(cat /kernel-version.txt) kernel-devel-$(cat /kernel-version.txt)
 
 WORKDIR /var/zfs
 RUN mkdir bin && ln -s /usr/bin/ld.gold bin/ld
 ENV PATH="/var/zfs/bin:${PATH}"
-
-RUN rpm -qa kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' | tee /kernel-version.txt
 
 RUN git clone https://github.com/openzfs/zfs
 WORKDIR /var/zfs/zfs
