@@ -22,10 +22,15 @@ table inet xen {
         chain nat {
                 type nat hook prerouting priority 0; policy accept;
 
+                iif $nic_upstream jump nat_portforward;
+        }
+
+        chain nat_portforward {
 	        # we have to dnat all port forwards here
 		# ex:
                 # 	tcp dport 80 dnat ip to 10.0.0.50:3000;
 	        {{MARKER_DNAT}}
+                drop;
         }
 
 	chain nat_postrouting {
