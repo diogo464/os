@@ -1,4 +1,4 @@
-HOST ?= core@192.168.0.1
+HOST ?= core@10.0.0.1
 
 default:
 	@make --print-targets
