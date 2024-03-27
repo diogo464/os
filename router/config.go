@@ -27,7 +27,7 @@ var CONFIG_HOSTS_SOURCES = []HostsSource{
 	{
 		Name: "kubernetes operator",
 		Fetcher: &HostsFetcherHttp{
-			Url: "http://10.0.2.1/hosts",
+			Url: "http://10.0.1.1/hosts",
 		},
 		Interval: time.Second * 10,
 	},
@@ -44,7 +44,7 @@ var FORWARD_SOURCES = []ForwardsSource{
 	{
 		Name: "kubernetes operator",
 		Fetcher: &ForwardsFetcherHttp{
-			Url: "http://10.0.2.1/forward",
+			Url: "http://10.0.1.1/forward",
 		},
 		Interval: time.Second * 10,
 	},
