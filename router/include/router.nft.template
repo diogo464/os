@@ -54,6 +54,7 @@ table inet xen {
                 type filter hook forward priority 0; policy drop;
                 jump global;
 
+                iif $nic_lan accept;
                 oif vmap { $nic_upstream : jump forward_upstream, $nic_lan : jump forward_lan };
         }
 
