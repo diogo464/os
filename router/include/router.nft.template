@@ -9,8 +9,11 @@ flush ruleset
 
 define nic_upstream = enp2s0
 define nic_lan = enp1s0
+define nic_wireguard = wg0
 
 define net_ipv4_lan = 10.0.0.0/16
+
+define port_wireguard = 51820
 
 table inet xen {
         chain global {
@@ -22,10 +25,12 @@ table inet xen {
         chain nat {
                 type nat hook prerouting priority 0; policy accept;
 
-                iif $nic_upstream jump nat_portforward;
+                iif $nic_upstream jump nat_upstream;
         }
 
-        chain nat_portforward {
+        chain nat_upstream {
+                udp dport $port_wireguard accept;
+
 	        # we have to dnat all port forwards here
 		# ex:
                 # 	tcp dport 80 dnat ip to 10.0.0.50:3000;
@@ -45,7 +50,9 @@ table inet xen {
 
                 ip protocol icmp limit rate 5/second accept;
                 tcp dport ssh accept;
+                udp dport $port_wireguard accept;
                 iif $nic_lan accept;
+                iif $nic_wireguard accept;
 		iif lo accept;
         }
 
@@ -55,6 +62,8 @@ table inet xen {
                 jump global;
 
                 iif $nic_lan accept;
+                iif $nic_wireguard accept;
+                
                 oif vmap { $nic_upstream : jump forward_upstream, $nic_lan : jump forward_lan };
         }
 

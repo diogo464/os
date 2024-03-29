@@ -1,0 +1,13 @@
+[Unit]
+Description=Wireguard Server Hosts
+Documentation=https://git.d464.sh/code/wireguard-server
+After=network.target
+
+[Service]
+Environment="WGS_TOKEN="
+Environment="WGS_SERVER=127.0.0.1"
+ExecStart=sh -c '/usr/bin/wgs hosts > /run/router/wireguard-hosts'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

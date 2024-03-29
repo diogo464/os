@@ -10,9 +10,11 @@ RUN mkdir -p /etc/router /etc/router/hosts.d/ /etc/router/forward.d/
 COPY include/blocky.service /etc/systemd/system/
 COPY include/router.service /etc/systemd/system/
 COPY include/wgs.service /etc/systemd/system/
+COPY include/wgs-hosts.service /etc/systemd/system/
+COPY include/wgs-hosts.timer /etc/systemd/system/
 COPY router /usr/bin/router
 
 RUN systemctl disable NetworkManager
-RUN systemctl enable systemd-networkd blocky router wgs
+RUN systemctl enable systemd-networkd blocky router wgs wgs-hosts.timer
 
 RUN ostree container commit
