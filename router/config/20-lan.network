@@ -5,6 +5,7 @@ Name=enp1s0
 IPForward=true
 Address=10.0.0.1/16
 DHCPServer=yes
+IPv6SendRA=false
 
 [DHCPServer]
 PoolSize=150
