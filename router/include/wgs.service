@@ -4,13 +4,13 @@ Documentation=https://git.d464.sh/code/wireguard-server
 After=network.target
 
 [Service]
-Environment="WGS_TOKEN="
-Environment="WGS_PRIVATE_KEY="
+Environment="WGS_TOKEN=infra-wireguard"
+Environment="WGS_PRIVATE_KEY=iK99lOCzQoSUwCYrnOiuzjLlwcN7y225sha813CvflM="
 ExecStart=/usr/bin/wgs server \
 	--network 10.0.0.0/8 \
 	--config-directory /etc/wgs \
 	--dns-server 10.0.0.1 \
-	--server-endpoint ipv4.d464.sh \
+	--server-endpoint ipv4.d464.sh:51820 \
 	--address 10.0.0.1:3000
 Restart=always
 

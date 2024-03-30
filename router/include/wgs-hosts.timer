@@ -3,6 +3,7 @@ Description=Wireguard Server Hosts Timer
 
 [Timer]
 OnUnitActiveSec=10s
+OnCalendar=*:*:00/30
 Unit=wgs-hosts.service
 AccuracySec=1s
 

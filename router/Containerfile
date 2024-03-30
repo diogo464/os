@@ -3,18 +3,14 @@ FROM git.d464.sh/infra/os/base:latest
 RUN rpm-ostree install neovim htop tcpdump systemd-networkd tmux wpa_supplicant python
 RUN curl https://github.com/0xERR0R/blocky/releases/download/v0.23/blocky_v0.23_Linux_x86_64.tar.gz -L -o blocky.tgz && \
 	tar -xf blocky.tgz && rm blocky.tgz && chmod 0755 blocky && mv blocky /usr/bin/
-RUN curl https://git.d464.sh/code/wireguard-server/releases/download/0.1.0/wgs -L -o /usr/bin/wgs && chmod +x /usr/bin/wgs
+RUN curl https://git.d464.sh/code/wireguard-server/releases/download/0.2.0/wgs -L -o /usr/bin/wgs && chmod +x /usr/bin/wgs
 
 RUN mkdir -p /etc/router /etc/router/hosts.d/ /etc/router/forward.d/
 
-COPY include/blocky.service /etc/systemd/system/
 COPY include/router.service /etc/systemd/system/
-COPY include/wgs.service /etc/systemd/system/
-COPY include/wgs-hosts.service /etc/systemd/system/
-COPY include/wgs-hosts.timer /etc/systemd/system/
 COPY router /usr/bin/router
 
 RUN systemctl disable NetworkManager
-RUN systemctl enable systemd-networkd blocky router wgs wgs-hosts.timer
+RUN systemctl enable systemd-networkd router
 
 RUN ostree container commit

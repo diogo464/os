@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"fmt"
 	"log"
@@ -29,8 +30,18 @@ const (
 var (
 	//go:embed include/router.nft.template
 	ROUTER_NFT_TEMPLATE string
+
 	//go:embed include/blocky.yaml
 	ROUTER_BLOCKY_CONFIG string
+	//go:embed include/blocky.service
+	ROUTER_BLOCKY_SERVICE string
+
+	//go:embed include/wgs.service
+	ROUTER_WGS_SERVICE string
+	//go:embed include/wgs-hosts.service
+	ROUTER_WGS_HOSTS_SERVICE string
+	//go:embed include/wgs-hosts.timer
+	ROUTER_WGS_HOSTS_TIMER string
 )
 
 func main() {
@@ -47,24 +58,37 @@ func main() {
 	log.Println("Copying systemd-networkd network configurations...")
 	for _, config := range CONFIG_SYSTEMD_NETWORKD {
 		configPath := "/etc/systemd/network/" + config.Filename
-		if err := os.WriteFile(configPath, []byte(config.Content), 0644); err != nil {
-			log.Fatalf("Failed to write %s: %v", configPath, err)
-		}
-	}
-	log.Println("Restarting systemd-networkd...")
-	if err := runCommand("systemctl", "restart", "systemd-networkd"); err != nil {
-		log.Fatalf("Failed to restart systemd-networkd: %v", err)
+		writeFile(configPath, config.Content)
 	}
 
+	log.Println("Restarting systemd-networkd...")
+	runCommand("systemctl", "restart", "systemd-networkd")
+
+	// systemd unit files
+	writeFile("/etc/systemd/system/blocky.service", ROUTER_BLOCKY_SERVICE)
+	writeFile("/etc/systemd/system/wgs.service", ROUTER_WGS_SERVICE)
+	writeFile("/etc/systemd/system/wgs-hosts.service", ROUTER_WGS_HOSTS_SERVICE)
+	writeFile("/etc/systemd/system/wgs-hosts.timer", ROUTER_WGS_HOSTS_TIMER)
+	runCommand("systemctl", "daemon-reload")
+
+	log.Printf("enabling systemd units")
+	runCommand("systemctl", "enable", "blocky")
+	runCommand("systemctl", "enable", "wgs")
+	runCommand("systemctl", "enable", "wgs-hosts.timer")
+
+	// start systemd units
+	runCommand("systemctl", "start", "blocky")
+	runCommand("systemctl", "restart", "wgs")
+	runCommand("systemctl", "restart", "wgs-hosts.timer")
+
 	// blocky configuration
-	log.Println("Replacing Blocky config...")
-	if err := os.WriteFile(ROUTER_CONFIG_BLOCKY_PATH, []byte(ROUTER_BLOCKY_CONFIG), 0644); err != nil {
-		log.Fatalf("Failed to write %s: %v", ROUTER_CONFIG_BLOCKY_PATH, err)
+	log.Println("writing blocky config")
+	if writeFileIfChanged(ROUTER_CONFIG_BLOCKY_PATH, ROUTER_BLOCKY_CONFIG) {
+		runCommand("systemctl", "restart", "blocky")
 	}
-	log.Println("Restarting blocky...")
-	if err := runCommand("systemctl", "restart", "blocky"); err != nil {
-		log.Fatalf("Failed to restart blocky: %v", err)
-	}
+
+	// wait some time for wgs to start and create wg0 interface
+	time.Sleep(time.Second * 5)
 
 	go func() {
 		err := hostsLoop()
@@ -217,11 +241,41 @@ func ensureEmptyDirectory(path string) error {
 	return nil
 }
 
-func runCommand(name string, args ...string) error {
+func writeFile(path string, content string) {
+	log.Printf("writing %s", path)
+	if err := os.WriteFile(path, []byte(content), 0); err != nil {
+		log.Fatalf("failed to write %s", path)
+	}
+}
+
+func writeFileIfChanged(path string, content string) bool {
+	existing, err := os.ReadFile(path)
+	if err != nil && !os.IsNotExist(err) {
+		log.Fatalf("failed to read file %s", path)
+	}
+
+	if err == nil && bytes.Equal([]byte(content), existing) {
+		return false
+	}
+
+	writeFile(path, content)
+	return true
+}
+
+func runCommand(name string, args ...string) {
+	c := ""
+	c += name
+	for _, arg := range args {
+		c += " " + arg
+	}
+	log.Printf("running %s", c)
+
 	cmd := exec.Command(name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("failed to run %s", c)
+	}
 }
 
 func renderNftTemplate(template string, forwards []ForwardsEntry) string {
