@@ -197,7 +197,7 @@ log:
 # optional: add EDE error codes to dns response
 ede:
   # enabled if true, Default: false
-  enable: true
+  enable: false
 
 # optional: configure optional Special Use Domain Names (SUDN)
 specialUseDomains:
