@@ -12,6 +12,7 @@ define nic_lan = enp1s0
 define nic_wireguard = wg0
 
 define net_ipv4_lan = 10.0.0.0/16
+define net_ipv4_vpn = 10.3.0.0/24
 
 define port_wireguard = 51820
 
@@ -41,6 +42,7 @@ table inet xen {
 	chain nat_postrouting {
 		type nat hook postrouting priority 0; policy accept;
 		ip saddr $net_ipv4_lan masquerade;
+		ip saddr $net_ipv4_vpn masquerade;
 	}
 
         # packets coming destined to the router itself
