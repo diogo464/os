@@ -23,6 +23,11 @@ upstreams:
 # default: dual
 connectIPVersion: v4
 
+filtering:
+  queryTypes:
+    - AAAA
+    - HTTPS
+
 # optional: use black and white lists to block queries (for example ads, trackers, adult pages etc.)
 blocking:
   # definition of blacklist groups. Can be external link (http/https) or local file
