@@ -51,7 +51,7 @@ func parseNetworkctlStatus(output string) ([]HostsEntry, error) {
 		}
 		hosts = append(hosts, HostsEntry{
 			Address: addr,
-			Hosts:   []string{lease.Hostname},
+			Hosts:   []string{lease.Hostname, fmt.Sprintf("%v.local", lease.Hostname), fmt.Sprintf("%v.home", lease.Hostname), fmt.Sprintf("%v.lan", lease.Hostname)},
 		})
 	}
 
