@@ -2,7 +2,7 @@
 Description=Docker System Prune Timer
 
 [Timer]
-OnUnitActiveSec=2h
+OnActiveSec=2h
 Unit=docker-system-prune.service
 
 [Install]
