@@ -1,4 +1,4 @@
 FROM quay.io/fedora/fedora-coreos:stable
 RUN systemctl disable zincati
-RUN rpm-ostree install tmux
+RUN rpm-ostree install tmux distrobox
 RUN ostree container commit
