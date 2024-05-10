@@ -26,7 +26,6 @@ connectIPVersion: v4
 filtering:
   queryTypes:
     - AAAA
-    - HTTPS
 
 # optional: use black and white lists to block queries (for example ads, trackers, adult pages etc.)
 blocking:
