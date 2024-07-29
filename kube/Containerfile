@@ -11,7 +11,7 @@ RUN chown 0644 /etc/yum.repos.d/kubernetes.repo
 COPY include/rancher-k3s-common.repo /etc/yum.repos.d
 RUN chown 0644 /etc/yum.repos.d/rancher-k3s-common.repo
 
-RUN rpm-ostree install --assumeyes --allow-inactive kubectl k3s-selinux htop
+RUN rpm-ostree install --assumeyes --allow-inactive kubectl k3s-selinux
 
 COPY	include/k3s-agent.sh \
 		include/k3s-bootstrap.sh \

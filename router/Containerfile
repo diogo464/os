@@ -1,6 +1,6 @@
 FROM git.d464.sh/infra/os/base:latest
 
-RUN rpm-ostree install neovim htop tcpdump systemd-networkd tmux wpa_supplicant python
+RUN rpm-ostree install neovim tcpdump systemd-networkd tmux wpa_supplicant python
 RUN curl https://github.com/0xERR0R/blocky/releases/download/v0.23/blocky_v0.23_Linux_x86_64.tar.gz -L -o blocky.tgz && \
 	tar -xf blocky.tgz && rm blocky.tgz && chmod 0755 blocky && mv blocky /usr/bin/
 RUN curl https://git.d464.sh/code/wireguard-server/releases/download/0.2.0/wgs -L -o /usr/bin/wgs && chmod +x /usr/bin/wgs
