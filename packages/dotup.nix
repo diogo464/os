@@ -10,5 +10,5 @@ with pkgs;
 		};
 
 		RUSTC_BOOTSTRAP = true;
-		cargoSha256 = "sha256-L4GRRkMmm8x5ozPquJWrevaaKknCWNSKcyEEw8CqPc0=";
+		cargoHash = "sha256-L4GRRkMmm8x5ozPquJWrevaaKknCWNSKcyEEw8CqPc0=";
 	}
