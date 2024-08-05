@@ -57,7 +57,24 @@
 
   # List packages installed in system profile. To search, run: $ nix search wget
   environment.systemPackages = with pkgs; [
+    kubectl
+    k3s
   ];
+
+  networking.firewall.allowedTCPPorts = [ 6443 ];
+  services.k3s.enable = true;
+  services.k3s.role = "server";
+  services.k3s.extraFlags = toString [
+    "--cluster-cidr 10.1.0.0/16"
+    "--service-cidr 10.2.0.0/16"
+    "--cluster-dns 10.2.0.10"
+    "--cluster-domain cluster.local"
+    "--disable-cloud-controller"
+    "--disable-helm-controller"
+    "--disable traefik,servicelb,local-storage"
+    "--token-file /var/token"
+  ];
+
 
   # Some programs need SUID wrappers, can be configured further or are started in user sessions. programs.mtr.enable =
   # true; programs.gnupg.agent = {
