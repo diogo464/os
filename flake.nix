@@ -6,7 +6,7 @@
   outputs = { self, nixpkgs, ... }: {
         nixosConfigurations.nas = nixpkgs.lib.nixosSystem {
                 system = "x86_64-linux";
-                modules = [ ./configuration.nix ];
+                modules = [ ./machines/nas/configuration.nix ];
         };
   };
 }
