@@ -6,7 +6,7 @@ on:
     - cron: "0 0 * * 1" # every monday, I think...
 jobs:
   build:
-    runs-on: [fedora-40]
+    runs-on: [fedora-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
