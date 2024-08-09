@@ -68,5 +68,6 @@ RUN ln -s /usr/bin/man.man-db /usr/bin/man
 
 COPY inotify.conf /etc/sysctl.d/inotify.conf
 COPY selinux-config /etc/selinux/config
+COPY 50-wired.network /usr/lib/systemd/network/50-wired.network
 
 RUN ostree container commit
