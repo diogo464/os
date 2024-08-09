@@ -15,3 +15,9 @@ EmitDNS=yes
 DNS=10.0.0.1
 BootServerAddress=10.0.0.1
 BootFilename=
+
+[DHCPServerStaticLease]
+# citadel
+# this ip is fixed because restarting k3s with a different ip makes etcd complain
+MACAddress=10:7b:44:18:dc:36
+Address=10.0.0.113
