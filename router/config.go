@@ -1,27 +1,8 @@
 package main
 
 import (
-	_ "embed"
 	"time"
 )
-
-var (
-	//go:embed config/10-upstream.network
-	CONFIG_NETWORK_FILE_UPSTREAM string
-	//go:embed config/20-lan.network
-	CONFIG_NETWORK_FILE_LAN string
-)
-
-var CONFIG_SYSTEMD_NETWORKD = []SystemdNetworkdConfig{
-	{
-		Content:  CONFIG_NETWORK_FILE_UPSTREAM,
-		Filename: "10-upstream.network",
-	},
-	{
-		Content:  CONFIG_NETWORK_FILE_LAN,
-		Filename: "20-lan.network",
-	},
-}
 
 var CONFIG_HOSTS_SOURCES = []HostsSource{
 	{

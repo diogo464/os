@@ -1,0 +1,34 @@
+[dataset."blackmesa/k8s"]
+schedules = ["hourly", "daily", "weekly", "monthly"]
+recursive = true
+
+[dataset."blackmesa/gitea"]
+schedules = ["hourly", "daily", "weekly", "monthly"]
+
+[dataset."blackmesa/archive"]
+schedules = ["hourly", "daily", "weekly", "monthly"]
+
+[dataset."blackmesa/drive"]
+schedules = ["hourly", "daily", "weekly", "monthly"]
+
+[dataset."blackmesa/miei"]
+schedules = ["hourly", "daily", "weekly", "monthly"]
+
+[dataset."blackmesa/sonia"]
+schedules = ["hourly", "daily", "weekly", "monthly"]
+
+[schedule.hourly]
+cron = "@hourly"
+keep = 24
+
+[schedule.daily]
+cron = "@daily"
+keep = 7
+
+[schedule.weekly]
+cron = "@weekly"
+keep = 4
+
+[schedule.monthly]
+cron = "@monthly"
+keep = 6

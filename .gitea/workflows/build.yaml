@@ -6,7 +6,7 @@ on:
     - cron: "0 0 * * 1" # every monday, I think...
 jobs:
   build:
-    runs-on: [fedora-39]
+    runs-on: [fedora-40]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,4 +19,4 @@ jobs:
           password: ${{ secrets.AUTH_TOKEN }}
 
       - name: build and push
-        run: "PUSH=1 ./build.sh"
+        run: "PUSH=1 ./coreos/build.sh"

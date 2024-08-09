@@ -1,8 +1,0 @@
-[Match]
-Name=enp2s0
-
-[Network]
-IPForward=true
-DHCP=ipv4
-SendHostname=false
-UseHostname=false

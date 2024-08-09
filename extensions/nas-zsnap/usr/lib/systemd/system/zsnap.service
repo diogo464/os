@@ -1,0 +1,12 @@
+[Unit]
+Description=zsnap
+
+[Service]
+Type=simple
+Environment="RUST_LOG=trace"
+ExecStart=/usr/local/bin/zsnap --config /usr/etc/zsnap.toml run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

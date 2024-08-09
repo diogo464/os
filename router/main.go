@@ -28,20 +28,8 @@ const (
 )
 
 var (
-	//go:embed include/router.nft.template
+	//go:embed router.nft.template
 	ROUTER_NFT_TEMPLATE string
-
-	//go:embed include/blocky.yaml
-	ROUTER_BLOCKY_CONFIG string
-	//go:embed include/blocky.service
-	ROUTER_BLOCKY_SERVICE string
-
-	//go:embed include/wgs.service
-	ROUTER_WGS_SERVICE string
-	//go:embed include/wgs-hosts.service
-	ROUTER_WGS_HOSTS_SERVICE string
-	//go:embed include/wgs-hosts.timer
-	ROUTER_WGS_HOSTS_TIMER string
 )
 
 func main() {
@@ -49,46 +37,6 @@ func main() {
 	if err := os.MkdirAll(ROUTER_RUN_DIRECTORY, 0755); err != nil {
 		log.Fatalf("Failed to create %s: %v", ROUTER_RUN_DIRECTORY, err)
 	}
-
-	// systemd-networkd configuration
-	log.Println("Clearing systemd-networkd network configurations...")
-	if err := ensureEmptyDirectory("/etc/systemd/network"); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Copying systemd-networkd network configurations...")
-	for _, config := range CONFIG_SYSTEMD_NETWORKD {
-		configPath := "/etc/systemd/network/" + config.Filename
-		writeFile(configPath, config.Content)
-	}
-
-	log.Println("Restarting systemd-networkd...")
-	runCommand("systemctl", "restart", "systemd-networkd")
-
-	// systemd unit files
-	writeFile("/etc/systemd/system/blocky.service", ROUTER_BLOCKY_SERVICE)
-	writeFile("/etc/systemd/system/wgs.service", ROUTER_WGS_SERVICE)
-	writeFile("/etc/systemd/system/wgs-hosts.service", ROUTER_WGS_HOSTS_SERVICE)
-	writeFile("/etc/systemd/system/wgs-hosts.timer", ROUTER_WGS_HOSTS_TIMER)
-	runCommand("systemctl", "daemon-reload")
-
-	log.Printf("enabling systemd units")
-	runCommand("systemctl", "enable", "blocky")
-	runCommand("systemctl", "enable", "wgs")
-	runCommand("systemctl", "enable", "wgs-hosts.timer")
-
-	// start systemd units
-	runCommand("systemctl", "start", "blocky")
-	runCommand("systemctl", "restart", "wgs")
-	runCommand("systemctl", "restart", "wgs-hosts.timer")
-
-	// blocky configuration
-	log.Println("writing blocky config")
-	if writeFileIfChanged(ROUTER_CONFIG_BLOCKY_PATH, ROUTER_BLOCKY_CONFIG) {
-		runCommand("systemctl", "restart", "blocky")
-	}
-
-	// wait some time for wgs to start and create wg0 interface
-	time.Sleep(time.Second * 5)
 
 	go func() {
 		err := hostsLoop()
