@@ -5,6 +5,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/blocky --config /usr/etc/blocky.yaml
+RestartSec=5
 Restart=always
 LimitNOFILE=4096
 
