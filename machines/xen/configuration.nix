@@ -1,0 +1,301 @@
+# Edit this configuration file to define what should be installed on your system.  Help is available in the
+# configuration.nix(5) man page and in the NixOS manual (accessible by running ‘nixos-help’).
+
+{ config, pkgs, ... }:
+
+{
+  imports =
+    [
+      # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      ../../modules/basic.nix
+      ../../modules/user.nix
+      #../../modules/xen-daemon.nix
+      #../../modules/wireguard-server.nix
+    ];
+
+  # Bootloader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/vda";
+  boot.loader.grub.useOSProber = true;
+
+  # Define your hostname.
+  networking.hostName = "xen";
+
+  # Enable automatic login for the user.
+  services.getty.autologinUser = "diogo464";
+
+  # List packages installed in system profile. To search, run: $ nix search wget
+  environment.systemPackages = with pkgs; [
+    nftables
+    wireguard-tools
+  ];
+
+  networking.firewall.enable = false;
+  systemd.network.enable = true;
+  systemd.network.networks."10-upstream.network" = {
+    matchConfig.Name = "enp2s0";
+    networkConfig = {
+      IPv4Forwarding = true;
+      DHCP = "ipv4";
+    };
+    dhcpV4Config = {
+      SendHostname = false;
+      UseHostname = false;
+    };
+  };
+  systemd.network.networks."20-lan.network" = {
+    matchConfig.Name = "enp1s0";
+    networkConfig = {
+      IPv4Forwarding = true;
+      Address = "10.0.0.1/16";
+      DHCPServer = "yes";
+      IPv6SendRA = false;
+    };
+    dhcpServerConfig = {
+      PoolSize = 150;
+      PoolOffset = 50;
+      DefaultLeaseTimeSec = 30;
+      EmitDNS = "yes";
+      DNS = "10.0.0.1";
+      BootServerAddress = "10.0.0.1";
+      BootFilename = "";
+    };
+  };
+
+  services.blocky.enable = true;
+  services.blocky.settings = {
+    # Configure startup behavior.
+    # accepted: blocking, failOnError, fast
+    # default: blocking
+    upstreams = {
+      init.strategy = "fast";
+
+      # these external DNS resolvers will be used. Blocky picks 2 random resolvers from the list for each query
+      # format for resolver: [net:]host:[port][/path]. net could be empty (default, shortcut for tcp+udp), tcp+udp, tcp, udp, tcp-tls or https (DoH). If port is empty, default port will be used (53 for udp and tcp, 853 for tcp-tls, 443 for https (Doh))
+      # this configuration is mandatory, please define at least one external DNS resolver
+      groups.default = [ "1.1.1.1" "8.8.8.8" ];
+
+      # optional: Determines what strategy blocky uses to choose the upstream servers.
+      # accepted: parallel_best, strict, random
+      # default: parallel_best
+      strategy = "random";
+
+      # optional: timeout to query the upstream resolver. Default: 2s
+      timeout = "2s";
+    };
+
+    # optional: Determines how blocky will create outgoing connections. This impacts both upstreams, and lists.
+    # accepted: dual, v4, v6
+    # default: dual
+    connectionIPVersion = "v4";
+
+    filtering.queryTypes = [ "AAAA" ];
+
+    # optional: use black and white lists to block queries (for example ads, trackers, adult pages etc.)
+    blocking = {
+      # definition of blacklist groups. Can be external link (http/https) or local file
+      blackLists = {
+        ads = [
+          "https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt"
+          "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+          "http://sysctl.org/cameleon/hosts"
+          "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
+        ];
+        special = [
+          "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts"
+        ];
+      };
+
+      # which response will be sent, if query is blocked:
+      # zeroIp: 0.0.0.0 will be returned (default)
+      # nxDomain: return NXDOMAIN as return code
+      # comma separated list of destination IP addresses (for example: 192.100.100.15, 2001:0db8:85a3:08d3:1319:8a2e:0370:7344). Should contain ipv4 and ipv6 to cover all query types. Useful with running web server on this address to display the "blocked" page.
+      blockType = "zeroIp";
+
+      # optional: TTL for answers to blocked domains
+      # default: 6h
+      blockTTL = "1m";
+
+      # optional: Configure how lists, AKA sources, are loaded
+      loading = {
+        # optional: list refresh period in duration format.
+        # Set to a value <= 0 to disable.
+        # default: 4h
+        refreshPeriod = "24h";
+
+        downloads = {
+          # optional: timeout for list download (each url). Use large values for big lists or slow internet connections
+          # default: 5s
+          timeout = "60s";
+          # optional: Maximum download attempts
+          # default: 3
+          attempts = "5";
+          # optional: Time between the download attempts
+          # default: 500ms
+          cooldown = "10s";
+        };
+
+        # optional: Maximum number of lists to process in parallel.
+        # default: 4
+        concurrency = "16";
+        # Configure startup behavior.
+        # accepted: blocking, failOnError, fast
+        # default: blocking
+        strategy = "failOnError";
+        # Number of errors allowed in a list before it is considered invalid.
+        # A value of -1 disables the limit.
+        # default: 5
+        maxErrorsPerSource = "5";
+      };
+    };
+
+    # optional: configuration for caching of DNS responses
+    caching = {
+      # duration how long a response must be cached (min value).
+      # If <=0, use response's TTL, if >0 use this value, if TTL is smaller
+      # Default: 0
+      minTime = "5m";
+      # duration how long a response must be cached (max value).
+      # If <0, do not cache responses
+      # If 0, use TTL
+      # If > 0, use this value, if TTL is greater
+      # Default: 0
+      maxTime = "30m";
+      # Max number of cache entries (responses) to be kept in cache (soft limit). Useful on systems with limited amount of RAM.
+      # Default (0): unlimited
+      maxItemsCount = "0";
+      # if true, will preload DNS results for often used queries (default: names queried more than 5 times in a 2-hour time window)
+      # this improves the response time for often used queries, but significantly increases external traffic
+      # default: false
+      prefetching = true;
+      # prefetch track time window (in duration format)
+      # default: 120
+      prefetchExpires = "2h";
+      # name queries threshold for prefetch
+      # default: 5
+      prefetchThreshold = 5;
+      # Max number of domains to be kept in cache for prefetching (soft limit). Useful on systems with limited amount of RAM.
+      # Default (0): unlimited
+      prefetchMaxItemsCount = 0;
+      # Time how long negative results (NXDOMAIN response or empty result) are cached. A value of -1 will disable caching for negative results.
+      # Default: 30m
+      cacheTimeNegative = "30m";
+    };
+
+    # optional: configuration for prometheus metrics endpoint
+    prometheus.enable = true;
+    prometheus.path = "/metrics";
+
+    # optional: write query information (question, answer, client, duration etc.) to daily csv file
+    queryLog = {
+      # optional one of: mysql, postgresql, csv, csv-client. If empty, log to console
+      type = "mysql";
+      # directory (should be mounted as volume in docker) for csv, db connection string for mysql/postgresql
+      target = "db_user:db_password@tcp(db_host_or_ip:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local";
+      #postgresql target: postgres://user:password@db_host_or_ip:5432/db_name
+      # if > 0, deletes log files which are older than ... days
+      logRetentionDays = "7";
+      # optional: Max attempts to create specific query log writer, default: 3
+      creationAttempts = "1";
+      # optional: Time between the creation attempts, default: 2s
+      creationCooldown = "2s";
+      # optional: Which fields should be logged. You can choose one or more from: clientIP, clientName, responseReason, responseAnswer, question, duration. If not defined, it logs all fields
+      # fields:
+      #   - clientIP
+      #   - duration
+      # optional: Interval to write data in bulk to the external database, default: 30s
+      flushInterval = "30s";
+    };
+
+
+    # optional: use these DNS servers to resolve blacklist urls and upstream DNS servers. It is useful if no system DNS resolver is configured, and/or to encrypt the bootstrap queries.
+    bootstrapDns = [
+      "tcp+udp:1.1.1.1"
+      "https://1.1.1.1/dns-query"
+    ];
+
+
+    # optional: if path defined, use this file for query resolution (A, AAAA and rDNS). Default: empty
+    hostsFile = {
+      # optional: Hosts files to parse
+      sources = [
+        "/run/router/hosts"
+        "/run/router/wireguard-hosts"
+        "http://10.0.1.1/hosts"
+      ];
+      hostsTTL = "60s";
+      # optional: Configure how sources are loaded
+      loading = {
+        # optional: file refresh period in duration format.
+        # Set to a value <= 0 to disable.
+        # default: 4h
+        refreshPeriod = "10s";
+        # optional: Applies only to files that are downloaded (HTTP URLs).
+        downloads = {
+          # optional: timeout for file download (each url). Use large values for big files or slow internet connections
+          # default: 5s
+          timeout = "10s";
+          # optional: Maximum download attempts
+          # default: 3
+          attempts = 5;
+          # optional: Time between the download attempts
+          # default: 500ms
+          cooldown = "10s";
+          # optional: Maximum number of files to process in parallel.
+          # default: 4
+          concurrency = 4;
+          # Configure startup behavior.
+          # accepted: blocking, failOnError, fast
+          # default: blocking
+          strategy = "fast";
+          # Number of errors allowed in a file before it is considered invalid.
+          # A value of -1 disables the limit.
+          # default: 5
+          maxErrorsPerSource = -1;
+        };
+      };
+    };
+
+    # optional: ports configuration
+    ports = {
+      # optional: DNS listener port(s) and bind ip address(es), default 53 (UDP and TCP). Example: 53, :53, "127.0.0.1:5353,[::1]:5353"
+      dns = "10.0.0.1:53";
+      # optional: Port(s) and bind ip address(es) for DoT (DNS-over-TLS) listener. Example: 853, 127.0.0.1:853
+      tls = "10.0.0.1:853";
+      # optional: Port(s) and optional bind ip address(es) to serve HTTP used for prometheus metrics, pprof, REST API, DoH... If you wish to specify a specific IP, you can do so such as 192.168.0.1:4000. Example: 4000, :4000, 127.0.0.1:4000,[::1]:4000
+      http = "10.0.0.1:4000";
+    };
+
+    # optional: logging configuration
+    log = {
+      # optional: Log level (one from debug, info, warn, error). Default: info
+      level = "info";
+      # optional: Log format (text or json). Default: text
+      format = "text";
+      # optional: log timestamps. Default: true
+      timestamp = true;
+      # optional: obfuscate log output (replace all alphanumeric characters with *) for user sensitive data like request domains or responses to increase privacy. Default: false
+      privacy = false;
+    };
+
+    # optional: add EDE error codes to dns response
+    ede.enable = false;
+
+    # optional: configure optional Special Use Domain Names (SUDN)
+    # optional: block recomended private TLDs
+    # default: true
+    specialUseDomains.rfc6762-appendixG = true;
+
+    # optional: configure extended client subnet (ECS) support
+    ecs = {
+      # optional: if the request ecs option with a max sice mask the address will be used as client ip
+      useAsClient = true;
+      # optional: if the request contains a ecs option it will be forwarded to the upstream resolver
+      forward = true;
+    };
+  };
+
+  system.stateVersion = "24.05";
+}
+

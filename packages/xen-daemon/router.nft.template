@@ -1,0 +1,87 @@
+#!/sbin/nft -f
+
+# https://wiki.nftables.org/wiki-nftables/index.php/Simple_ruleset_for_a_home_router
+# https://paulgorman.org/technical/linux-nftables.txt.html
+# https://wiki.archlinux.org/title/nftables
+# https://man.archlinux.org/man/nft.8
+
+flush ruleset
+
+define nic_upstream = enp2s0
+define nic_lan = enp1s0
+define nic_wireguard = wg0
+
+define net_ipv4_lan = 10.0.0.0/16
+define net_ipv4_vpn = 10.3.0.0/24
+
+define port_wireguard = 51820
+
+table inet xen {
+        chain global {
+                ct state { established, related } accept;
+                ct state invalid drop;
+        }
+
+        # perform nat on incoming connetions if needed
+        chain nat {
+                type nat hook prerouting priority 0; policy accept;
+
+                iif $nic_upstream jump nat_upstream;
+        }
+
+        chain nat_upstream {
+                udp dport $port_wireguard accept;
+
+	        # we have to dnat all port forwards here
+		# ex:
+                # 	tcp dport 80 dnat ip to 10.0.0.50:3000;
+	        {{MARKER_DNAT}}
+                drop;
+        }
+
+	chain nat_postrouting {
+		type nat hook postrouting priority 0; policy accept;
+		ip saddr $net_ipv4_lan masquerade;
+		ip saddr $net_ipv4_vpn masquerade;
+	}
+
+        # packets coming destined to the router itself
+        chain input {
+                type filter hook input priority 0; policy drop;
+                jump global;
+
+                ip protocol icmp limit rate 5/second accept;
+                tcp dport ssh accept;
+                udp dport $port_wireguard accept;
+                iif $nic_lan accept;
+                iif $nic_wireguard accept;
+		iif lo accept;
+        }
+
+        # packets destined to another host
+        chain forward {
+                type filter hook forward priority 0; policy drop;
+                jump global;
+
+                iif $nic_lan accept;
+                iif $nic_wireguard accept;
+                
+                oif vmap { $nic_upstream : jump forward_upstream, $nic_lan : jump forward_lan };
+        }
+
+        chain forward_upstream {
+		accept
+        }
+
+        chain forward_lan {
+                # we have to accept the packets that were nated in the nat chain
+                # ex:
+                # 	ip daddr 10.0.0.50 tcp dport 3000 accept;
+                {{MARKER_FORWARD_ACCEPT}}
+        }
+
+        chain postrouting {
+                type filter hook postrouting priority 0; policy accept;
+                jump global;
+        }
+}
