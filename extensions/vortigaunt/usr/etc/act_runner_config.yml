@@ -39,6 +39,7 @@ runner:
     - "fedora-37:docker://git.d464.sh/actions/images/fedora:37"
     - "fedora-38:docker://git.d464.sh/actions/images/fedora:38"
     - "fedora-39:docker://git.d464.sh/actions/images/fedora:39"
+    - "fedora-40:docker://git.d464.sh/actions/images/fedora:40"
     - "fedora-latest:docker://git.d464.sh/actions/images/fedora:latest"
 
 cache:
