@@ -1,5 +1,9 @@
 [Match]
 Type=ether
+# Matching all interfaces of type ether causes problems with docker
+Kind=!veth
 
 [Network]
-DHCP=yes
+DHCP=ipv4
+IPMasquerade=yes
+IPForward=yes
