@@ -8,5 +8,7 @@ $SCRIPTS/fetch-binaries.sh || exit 1
 $SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/router
 $SCRIPTS/reload-extensions.sh $HOSTNAME
 
-ssh "$HOSTNAME" sudo systemctl enable --now router wgs wgs-hosts.timer
+ssh "$HOSTNAME" sudo systemctl daemon-reload
+ssh "$HOSTNAME" sudo systemctl enable router blocky wgs wgs-hosts.timer
+ssh "$HOSTNAME" sudo systemctl restart router blocky wgs
 ssh "$HOSTNAME" sudo systemctl restart systemd-networkd
