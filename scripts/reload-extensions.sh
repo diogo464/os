@@ -5,4 +5,4 @@ if [ "$#" -ne 1 ]; then
 	exit 1
 fi
 
-ssh "$1" sudo systemd-sysext refresh --force
+ssh "$1" sudo systemd-sysext refresh #--force

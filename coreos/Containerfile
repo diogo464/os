@@ -62,7 +62,7 @@ RUN systemctl disable zincati
 RUN systemctl enable nfs-server smb 
 
 RUN systemctl disable NetworkManager
-RUN systemctl enable systemd-networkd
+RUN systemctl enable systemd-networkd systemd-sysext
 
 RUN ln -s /usr/bin/man.man-db /usr/bin/man
 
