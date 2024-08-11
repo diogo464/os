@@ -49,6 +49,9 @@ func parseNetworkctlStatus(output string) ([]HostsEntry, error) {
 		if addr == nil {
 			return nil, errors.Errorf("Invalid IP address: %v", lease.Address)
 		}
+		if len(lease.Hostname) == 0 {
+			continue
+		}
 		hosts = append(hosts, HostsEntry{
 			Address: addr,
 			Hosts:   []string{lease.Hostname, fmt.Sprintf("%v.local", lease.Hostname), fmt.Sprintf("%v.home", lease.Hostname), fmt.Sprintf("%v.lan", lease.Hostname)},
