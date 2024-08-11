@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/env -S bash -x
 
 EXTENSIONS=$(dirname $0)/../extensions/
 SCRIPTS="$(dirname $0)/../scripts/"
@@ -9,6 +9,4 @@ $SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/router
 $SCRIPTS/reload-extensions.sh $HOSTNAME
 
 ssh "$HOSTNAME" sudo systemctl daemon-reload
-ssh "$HOSTNAME" sudo systemctl enable router blocky wgs wgs-hosts.timer
-ssh "$HOSTNAME" sudo systemctl restart router blocky wgs
-ssh "$HOSTNAME" sudo systemctl restart systemd-networkd
+ssh "$HOSTNAME" sudo systemctl start sysext-post-mount.service

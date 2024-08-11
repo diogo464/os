@@ -1,0 +1,12 @@
+[Unit]
+Description=Run systemd-sysext extension hooks
+After=systemd-sysext.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sysext-post-mount.sh
+RestartSec=5
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

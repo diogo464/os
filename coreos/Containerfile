@@ -70,4 +70,8 @@ COPY inotify.conf /usr/lib/sysctl.d/inotify.conf
 COPY selinux-config /etc/selinux/config
 COPY 50-wired.network /usr/lib/systemd/network/50-wired.network
 
+COPY sysext-post-mount.service /usr/lib/systemd/system/
+COPY sysext-post-mount.sh /usr/bin/
+RUN systemctl enable sysext-post-mount.service
+
 RUN ostree container commit
