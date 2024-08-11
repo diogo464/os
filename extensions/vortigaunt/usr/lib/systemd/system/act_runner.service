@@ -4,7 +4,7 @@ Description=gitea act runner
 [Service]
 Type=exec
 WorkingDirectory=%h/%i/
-ExecStart=/usr/bin/sudo /usr/bin/act_runner daemon -c /usr/etc/act_runner_config.yml
+ExecStart=/usr/bin/act_runner daemon -c /usr/etc/act_runner_config.yml
 RestartSec=5s
 Restart=always
 
