@@ -5,7 +5,9 @@ SCRIPTS="$(dirname $0)/../scripts/"
 HOSTNAME="xen"
 
 $SCRIPTS/fetch-binaries.sh || exit 1
+$SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/disable-ipv6
 $SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/router
+$SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/node-exporter
 $SCRIPTS/reload-extensions.sh $HOSTNAME
 
 ssh "$HOSTNAME" sudo systemctl daemon-reload

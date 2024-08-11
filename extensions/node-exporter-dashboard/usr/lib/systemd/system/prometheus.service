@@ -1,0 +1,14 @@
+[Unit]
+Description=Prometheus
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/prometheus \
+	--config.file=/usr/etc/prometheus.yml \
+	--storage.tsdb.path=/var/zfs/blackmesa/prometheus \
+	--storage.tsdb.retention.time=365d
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

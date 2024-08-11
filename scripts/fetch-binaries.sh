@@ -17,6 +17,12 @@ ACTRUNNER_HASH="234c2bdb871e7b0bfb84697f353395bfc7819faf9f0c0443845868b64a041057
 WGS_URL="https://git.d464.sh/code/wireguard-server/releases/download/0.2.0/wgs"
 WGS_HASH="62b404188485c8b3417d0a0ce1fb4344852ab112e550810cc417b23705724c8c"
 
+NODEEXPORTER_URL="https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz"
+NODEEXPORTER_HASH="0c9219b9860c6250c0bc3da5d79bd79c17f3938345fa7503f95cfa2ad7c3ba1d"
+
+PROMETHEUS_URL="https://github.com/prometheus/prometheus/releases/download/v2.54.0/prometheus-2.54.0.linux-amd64.tar.gz"
+PROMETHEUS_HASH="67291f049367ab88bb7f39b9deb63915d60179329bfe5d01439eb4dca6a44ef0"
+
 function fetch() {
 	# arguments: name url hash
 	local OUT="$BINARIES_DIR/$1"
@@ -38,18 +44,26 @@ function fetch() {
 	chmod +x "$OUT"
 }
 
-function fetch_blocky() {
-	local OUT="$BINARIES_DIR/$1"
+function fetch_targz() {
+	# arguments: name url hash name_in_archive
+	local OUT=$(realpath "$BINARIES_DIR/$1")
+	local TDIR=$(mktemp -d)
+
 	echo "Downloading $1 from $2"
 	if [ -e "$OUT" ]; then
 		echo "Binary already exists, skipping"
 		return
 	fi
-	pushd "$BINARIES_DIR"
+
+	pushd $TDIR
 		curl -L "$2" -o "$1.tar.gz" || exit 1
 		tar -xf "$1.tar.gz" || exit 1
+		find .
+		mv $(find . -type f -name "$4") $OUT
 	popd
-	rm "$BINARIES_DIR/LICENSE" "$BINARIES_DIR/README.md" "$OUT.tar.gz"
+
+	rm -rf $TDIR
+
 	echo "Checking $1's hash"
 	local H=$(sha256sum "$OUT" | cut -d" " -f1)
 	if [ "$H" != "$3" ]; then
@@ -65,9 +79,11 @@ function fetch_blocky() {
 mkdir -p "$BINARIES_DIR"
 fetch k3s $K3S_URL $K3S_HASH
 fetch zsnap $ZSNAP_URL $ZSNAP_HASH
-fetch_blocky blocky $BLOCKY_URL $BLOCKY_HASH
+fetch_targz blocky $BLOCKY_URL $BLOCKY_HASH blocky
 fetch act_runner $ACTRUNNER_URL $ACTRUNNER_HASH
 fetch wgs $WGS_URL $WGS_HASH
+fetch_targz node_exporter $NODEEXPORTER_URL $NODEEXPORTER_HASH node_exporter
+fetch_targz prometheus $PROMETHEUS_URL $PROMETHEUS_HASH prometheus
 
 pushd router
 	CGO_ENABLED=0 go build -o ../binaries/

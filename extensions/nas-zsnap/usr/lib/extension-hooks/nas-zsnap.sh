@@ -3,4 +3,4 @@
 systemctl enable \
 	zfs-scrub-monthly@borealis.timer \
 	zfs-scrub-monthly@blackmesa.timer
-systemctl start zsnap
+systemctl restart zsnap

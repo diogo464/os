@@ -6,6 +6,7 @@ HOSTNAME="vortigaunt"
 
 $SCRIPTS/fetch-binaries.sh || exit 1
 $SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/vortigaunt
+$SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/node-exporter
 $SCRIPTS/reload-extensions.sh $HOSTNAME
 
 ssh "$HOSTNAME" sudo systemctl daemon-reload

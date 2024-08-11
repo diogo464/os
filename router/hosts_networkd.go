@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -57,6 +58,15 @@ func parseNetworkctlStatus(output string) ([]HostsEntry, error) {
 			Hosts:   []string{lease.Hostname, fmt.Sprintf("%v.local", lease.Hostname), fmt.Sprintf("%v.home", lease.Hostname), fmt.Sprintf("%v.lan", lease.Hostname)},
 		})
 	}
+
+	localHostname, err := os.Hostname()
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to get local hostname")
+	}
+	hosts = append(hosts, HostsEntry{
+		Address: net.IPv4(10, 0, 0, 1),
+		Hosts:   []string{localHostname, fmt.Sprintf("%v.local", localHostname), fmt.Sprintf("%v.home", localHostname), fmt.Sprintf("%v.lan", localHostname)},
+	})
 
 	return hosts, nil
 }
