@@ -89,12 +89,31 @@ func hostsLoop() error {
 	for result := range resultsChan {
 		entries[result.index] = result.entries
 
-		content := ""
+		finalEntries := []HostsEntry{}
 		for _, entryArr := range entries {
 			for _, entry := range entryArr {
-				content += entry.String() + "\n"
+				finalEntries = append(finalEntries, entry)
+
+				for _, host := range entry.Hosts {
+					if strings.Contains(host, ".") {
+						continue
+					}
+
+					finalEntries = append(finalEntries, HostsEntry{
+						Address: entry.Address,
+						Hosts: []string{
+							fmt.Sprintf("%v.local", host), fmt.Sprintf("%v.home", host), fmt.Sprintf("%v.lan", host),
+						},
+					})
+				}
 			}
 		}
+
+		content := ""
+		for _, entry := range finalEntries {
+			content += entry.String() + "\n"
+		}
+
 		if content == prevFileContent {
 			continue
 		}

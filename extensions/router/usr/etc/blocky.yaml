@@ -146,7 +146,7 @@ hostsFile:
   # optional: Hosts files to parse
   sources:
     - /run/router/hosts
-    - /run/router/wireguard-hosts
+    # - /run/router/wireguard-hosts
     # - http://10.0.1.1/hosts
   hostsTTL: 60s
   # optional: Configure how sources are loaded

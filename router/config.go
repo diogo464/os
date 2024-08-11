@@ -19,6 +19,16 @@ var CONFIG_HOSTS_SOURCES = []HostsSource{
 		},
 		Interval: time.Second * 10,
 	},
+	{
+		Name:     "wireguard",
+		Fetcher:  &HostsFetcherWireguard{},
+		Interval: time.Second * 10,
+	},
+	{
+		Name:     "local hostname",
+		Fetcher:  &HostsFetcherHostname{},
+		Interval: time.Second * 60,
+	},
 }
 
 var FORWARD_SOURCES = []ForwardsSource{
