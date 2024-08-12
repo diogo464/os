@@ -1,7 +1,8 @@
 name: build
-on: 
+on:
   push:
-    branches: [main]
+    paths:
+      - coreos/**
   schedule:
     - cron: "0 0 * * 1" # every monday, I think...
 jobs:
