@@ -2,10 +2,9 @@
 
 EXTENSIONS=$(dirname $0)/../extensions/
 SCRIPTS="$(dirname $0)/../scripts/"
-HOSTNAME="vortigaunt"
+HOSTNAME="strider"
 
 $SCRIPTS/fetch-binaries.sh || exit 1
-$SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/vortigaunt
 $SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/gitea-builder
 $SCRIPTS/upload-extension.sh $HOSTNAME $EXTENSIONS/node-exporter
 $SCRIPTS/reload-extensions.sh $HOSTNAME
