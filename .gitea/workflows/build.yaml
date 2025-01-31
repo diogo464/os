@@ -19,5 +19,8 @@ jobs:
           username: ${{ env.GITHUB_ACTOR }}
           password: ${{ secrets.AUTH_TOKEN }}
 
+      - name: install dependencies
+        run: sudo dnf install -y jq
+
       - name: build and push
         run: "PUSH=1 ./coreos/build.sh"
