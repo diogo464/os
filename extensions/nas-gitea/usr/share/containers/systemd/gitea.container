@@ -2,7 +2,7 @@
 Description=Gitea
 
 [Container]
-Image=docker.io/gitea/gitea:1.21.3
+Image=docker.io/gitea/gitea:1.23.1
 DNS=10.0.0.1
 SecurityLabelDisable=true
 Volume=/var/zfs/blackmesa/gitea:/data
